@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useEmployeeContext } from "../../context/EmployeeProvider";
 import { Employee } from "../../models/Employee";
-import { 
-    Edit} from 'lucide-react';
+import { Edit } from "lucide-react";
 
 export type EditAction = "parent" | "siblings" | "children" | "remove";
 
@@ -11,17 +10,16 @@ const ChartEditor: React.FC = () => {
 	const [nodeValues, setNodeValues] = useState<string>("");
 	const [action, setAction] = useState<EditAction>("children");
 	const [isMobile, setIsMobile] = useState(false);
-	
+
 	useEffect(() => {
-			const checkMobile = () => {
-				setIsMobile(window.innerWidth <= 768);
-			};
-	
-			checkMobile();
-			window.addEventListener('resize', checkMobile);
-			return () => window.removeEventListener('resize', checkMobile);
-		}, []);
-	
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth <= 768);
+		};
+
+		checkMobile();
+		window.addEventListener("resize", checkMobile);
+		return () => window.removeEventListener("resize", checkMobile);
+	}, []);
 
 	const { state, api } = useEmployeeContext();
 
@@ -105,7 +103,13 @@ const ChartEditor: React.FC = () => {
 	const genId = () => `emp-${Math.random().toString(36).slice(2, 9)}`;
 
 	return (
-		<div style={{ position: "relative" }}>
+		<div
+			style={{
+				position: "fixed",
+				bottom: 20,
+				zIndex: 1000,
+			}}
+		>
 			<button
 				style={{
 					border: "none",
@@ -121,82 +125,88 @@ const ChartEditor: React.FC = () => {
 				}}
 				onClick={() => setOpen(!open)}
 			>
-				 <Edit size={16} />
+				<Edit size={16} />
 			</button>
-			<div
-				style={{
-					position: "absolute",
-					left: "40px",
-					top: 0,
-					paddingLeft: "10px",
-					opacity: open ? 1 : 0,
-					transform: open ? "translateX(0)" : "translateX(-10px)",
-					transition: "all 0.3s ease-in-out",
-					display: open ? "flex" : "none",
-					flexWrap: "wrap",
-					alignItems: "center",
-					gap: 8,
-					borderRadius: 4,
-					backgroundColor: "#fff",
-				}}
-			>
+
+			{open && (
 				<div
 					style={{
+						marginTop: 10,
 						display: "flex",
-						flexWrap: "wrap",
-						alignItems: "center",
-						gap: isMobile ? 2 : 8,
-						marginBottom: "1rem",
-						padding: isMobile ? 0 : 8,
-						borderRadius: 4,
+						flexDirection: isMobile ? "column" : "row",
+						alignItems: isMobile ? "stretch" : "center",
+						gap: isMobile ? 8 : 12,
+						background: "#fff",
+						padding: isMobile ? "10px" : "4px",
+						borderRadius: 6,
+						boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+						maxWidth: isMobile ? "90vw" : "95vw",
+						width: isMobile ? "90vw" : "auto",
+						marginLeft: isMobile ? "" : "20px",
 					}}
 				>
-					<label>
+					<div
+						style={{
+							display: "flex",
+							flexWrap: "wrap",
+							justifyContent: isMobile ? "space-between" : "flex-start",
+							gap: 8,
+						}}
+					>
+						<label>
 							<input
 								type="radio"
 								name="action"
 								value="children"
 								checked={action === "children"}
 								onChange={() => setAction("children")}
-							/>
+							/>{" "}
 							Add Children
 						</label>
-					<label style={{ marginLeft: 8 }}>
+						<label>
 							<input
 								type="radio"
 								name="action"
 								value="siblings"
 								checked={action === "siblings"}
 								onChange={() => setAction("siblings")}
-							 />
+							/>{" "}
 							Add Siblings
 						</label>
-					<label style={{ marginLeft: isMobile ? 4 : 8 }}>
+						<label>
 							<input
 								type="radio"
 								name="action"
 								value="parent"
 								checked={action === "parent"}
 								onChange={() => setAction("parent")}
-							 />
+							/>{" "}
 							Add Parent
 						</label>
-						<label style={{ marginLeft: isMobile ? 4 : 8 }}>
-						<input
+						<label>
+							<input
 								type="radio"
 								name="action"
 								value="remove"
 								checked={action === "remove"}
 								onChange={() => setAction("remove")}
-							 />
+							/>{" "}
 							Remove Node
 						</label>
+					</div>
+
 					<input
 						type="text"
 						placeholder="Node names (comma separated)"
 						value={nodeValues}
 						onChange={(e) => setNodeValues(e.target.value)}
-						style={{ width: isMobile ? 230 : 260, height: "20px" }}
+						style={{
+							width: isMobile ? "95%" : 260,
+							height: 28,
+							padding: "4px 8px",
+							borderRadius: 4,
+							border: "1px solid #ccc",
+						}}
 					/>
 					<button
 						onClick={handleClick}
@@ -207,15 +217,13 @@ const ChartEditor: React.FC = () => {
 							padding: "6px 12px",
 							borderRadius: 4,
 							cursor: "pointer",
-							display: "flex",
-							alignItems: "center",
-							gap: 4
+							width: isMobile ? "100%" : "auto",
 						}}
 					>
 						Apply
 					</button>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 };
